@@ -7,15 +7,15 @@ import 'package:finview_lite/views/dashboard/widgets/holding_list_item.dart';
 
 void main() {
   setUp(() {
-    final controller = PortfolioController();
-    Get.put(controller);
+    Get.put(PortfolioController());
   });
 
   tearDown(() {
-    Get.delete<PortfolioController>();
+    Get.delete<PortfolioController>(force: true);
   });
 
-  testWidgets('HoldingListItem displays data correctly', (WidgetTester tester) async {
+  testWidgets('HoldingListItem displays data correctly',
+      (WidgetTester tester) async {
     const holding = HoldingModel(
       symbol: 'AAPL',
       name: 'Apple Inc.',
@@ -27,16 +27,19 @@ void main() {
     await tester.pumpWidget(
       const GetMaterialApp(
         home: Scaffold(
-          body: HoldingListItem(holding: holding),
+          body: HoldingListItem(holding: holding, index: 0),
         ),
       ),
     );
 
+    // Settle all entrance animations (TweenAnimationBuilder)
+    await tester.pumpAndSettle();
+
     expect(find.text('AAPL'), findsOneWidget);
     expect(find.text('Apple Inc.'), findsOneWidget);
-    // Total value = 10 * 150.0 = 1500
+    // Total value = 10 * 150.0 = $1,500.00
     expect(find.text('\$1,500.00'), findsOneWidget);
-    // Gain % = 50%
+    // Gain % = (150-100)/100 * 100 = 50%
     expect(find.text('+50.00%'), findsOneWidget);
   });
 }

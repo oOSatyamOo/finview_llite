@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/theme_controller.dart';
+import '../../core/constants/app_strings.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -42,7 +43,7 @@ class LoginView extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'FinView Lite',
+                  AppStrings.loginTitle,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -50,7 +51,7 @@ class LoginView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Premium Investment Insights',
+                  AppStrings.loginSubtitle,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -59,7 +60,7 @@ class LoginView extends StatelessWidget {
                 const SizedBox(height: 48),
                 TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Username',
+                    labelText: AppStrings.loginUsernameLabel,
                     prefixIcon: const Icon(Icons.person_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -67,13 +68,13 @@ class LoginView extends StatelessWidget {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                   ),
-                  initialValue: 'investor1',
+                  initialValue: AppStrings.loginDefaultUsername,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   obscureText: true,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: AppStrings.loginPasswordLabel,
                     prefixIcon: const Icon(Icons.lock_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -81,7 +82,7 @@ class LoginView extends StatelessWidget {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                   ),
-                  initialValue: 'password',
+                  initialValue: AppStrings.loginDefaultPassword,
                 ),
                 const SizedBox(height: 32),
                 Obx(() => ElevatedButton(
@@ -100,7 +101,7 @@ class LoginView extends StatelessWidget {
                           width: 24,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text('Secure Login'),
+                      : const Text(AppStrings.loginButtonLabel),
                 )),
               ],
             ),

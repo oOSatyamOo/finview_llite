@@ -16,6 +16,34 @@
       "units": 10,
       "avg_cost": 1400.0,
       "current_price": 1500.0
+    },
+    {
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries",
+      "units": 20,
+      "avg_cost": 2500.0,
+      "current_price": 2600.0
+    },
+    {
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank",
+      "units": 15,
+      "avg_cost": 1200.0,
+      "current_price": 1300.0
+    },
+    {
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "units": 25,
+      "avg_cost": 600.0,
+      "current_price": 650.0
+    },
+    {
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank",
+      "units": 12,
+      "avg_cost": 900.0,
+      "current_price": 950.0
     }
   ]
 }

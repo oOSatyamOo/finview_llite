@@ -29,10 +29,7 @@ class _PortfolioSummaryCardState extends State<PortfolioSummaryCard> {
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: MouseRegion(
@@ -70,23 +67,35 @@ class _PortfolioSummaryCardState extends State<PortfolioSummaryCard> {
                       const Spacer(),
                       Obx(() {
                         final isPositive = widget.summary.totalGain >= 0;
-                        final color = isPositive 
-                            ? Theme.of(context).colorScheme.secondary 
+                        final color = isPositive
+                            ? Theme.of(context).colorScheme.secondary
                             : Theme.of(context).colorScheme.error;
-                        final icon = isPositive ? Icons.arrow_upward : Icons.arrow_downward;
-                        
+                        final icon = isPositive
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward;
+
                         String gainText;
-                        if (controller.returnFormat.value == ReturnFormat.absolute) {
-                          gainText = currencyFormatter.format(widget.summary.totalGain.abs());
+                        if (controller.returnFormat.value ==
+                            ReturnFormat.absolute) {
+                          gainText = currencyFormatter.format(
+                            widget.summary.totalGain.abs(),
+                          );
                         } else {
-                          final percent = widget.summary.totalGain / (widget.summary.portfolioValue - widget.summary.totalGain) * 100;
+                          final percent =
+                              widget.summary.totalGain /
+                              (widget.summary.portfolioValue -
+                                  widget.summary.totalGain) *
+                              100;
                           gainText = '${percent.abs().toStringAsFixed(2)}%';
                         }
 
                         return GestureDetector(
                           onTap: controller.toggleReturnFormat,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: color.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),

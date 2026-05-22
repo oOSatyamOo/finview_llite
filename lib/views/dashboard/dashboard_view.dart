@@ -40,13 +40,13 @@ class _DashboardViewState extends State<DashboardView>
       curve: Curves.easeOut,
     );
 
-    _headerSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.4),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerAnimationController,
-      curve: Curves.easeOutCubic,
-    ));
+    _headerSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, -0.4), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _headerAnimationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     // Delay the entrance by 200ms so the screen first settles
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -74,13 +74,17 @@ class _DashboardViewState extends State<DashboardView>
             onPressed: _portfolioController.refreshData,
             tooltip: AppStrings.tooltipRefresh,
           ),
-          Obx(() => IconButton(
-            icon: Icon(themeController.isDarkMode.value
-                ? Icons.light_mode
-                : Icons.dark_mode),
-            onPressed: themeController.toggleTheme,
-            tooltip: AppStrings.tooltipToggleTheme,
-          )),
+          Obx(
+            () => IconButton(
+              icon: Icon(
+                themeController.isDarkMode.value
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+              ),
+              onPressed: themeController.toggleTheme,
+              tooltip: AppStrings.tooltipToggleTheme,
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: authController.logout,
@@ -125,13 +129,15 @@ class _DashboardViewState extends State<DashboardView>
                             position: _headerSlideAnimation,
                             child: FadeTransition(
                               opacity: _headerFadeAnimation,
-                              child: Obx(() => Text(
-                                '${AppStrings.dashboardGreeting} ${_portfolioController.portfolio.value?.user ?? AppStrings.dashboardFallbackUser}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall
-                                    ?.copyWith(fontWeight: FontWeight.w700),
-                              )),
+                              child: Obx(
+                                () => Text(
+                                  '${AppStrings.dashboardGreeting} ${_portfolioController.portfolio.value?.user ?? AppStrings.dashboardFallbackUser}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -142,42 +148,42 @@ class _DashboardViewState extends State<DashboardView>
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         sliver: SliverToBoxAdapter(
-                          child: RepaintBoundary(
-                            child: ResponsiveHelper(
-                              // ── Mobile: Summary then Chart vertically ──────
-                              mobile: Column(
+                          child: ResponsiveHelper(
+                            // ── Mobile: Summary then Chart vertically ──────
+                            mobile: Column(
+                              children: [
+                                PortfolioSummaryCard(
+                                  summary:
+                                      _portfolioController.portfolio.value!,
+                                ),
+                                const SizedBox(height: 16),
+                                AllocationChart(
+                                  holdings: _portfolioController.holdings,
+                                ),
+                              ],
+                            ),
+                            // ── Tablet/Desktop: side-by-side ─────────────
+                            desktop: IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  PortfolioSummaryCard(
-                                    summary: _portfolioController.portfolio.value!,
+                                  // Summary takes 55% of space
+                                  Flexible(
+                                    flex: 55,
+                                    child: PortfolioSummaryCard(
+                                      summary:
+                                          _portfolioController.portfolio.value!,
+                                    ),
                                   ),
-                                  const SizedBox(height: 16),
-                                  AllocationChart(
-                                    holdings: _portfolioController.holdings,
+                                  const SizedBox(width: 16),
+                                  // Chart takes 45% of space
+                                  Flexible(
+                                    flex: 45,
+                                    child: AllocationChart(
+                                      holdings: _portfolioController.holdings,
+                                    ),
                                   ),
                                 ],
-                              ),
-                              // ── Tablet/Desktop: side-by-side ─────────────
-                              desktop: IntrinsicHeight(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    // Summary takes 55% of space
-                                    Flexible(
-                                      flex: 55,
-                                      child: PortfolioSummaryCard(
-                                        summary: _portfolioController.portfolio.value!,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    // Chart takes 45% of space
-                                    Flexible(
-                                      flex: 45,
-                                      child: AllocationChart(
-                                        holdings: _portfolioController.holdings,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ),
@@ -195,32 +201,36 @@ class _DashboardViewState extends State<DashboardView>
                             children: [
                               Text(
                                 AppStrings.holdingsTitle,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
+                                style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(fontWeight: FontWeight.w700),
                               ),
-                              Obx(() => DropdownButton<SortType>(
-                                value: _portfolioController.currentSort.value,
-                                underline: const SizedBox(),
-                                borderRadius: BorderRadius.circular(12),
-                                items: const [
-                                  DropdownMenuItem(
+                              Obx(
+                                () => DropdownButton<SortType>(
+                                  value: _portfolioController.currentSort.value,
+                                  underline: const SizedBox(),
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  borderRadius: BorderRadius.circular(12),
+                                  items: const [
+                                    DropdownMenuItem(
                                       value: SortType.value,
-                                      child: Text(AppStrings.sortByValue)),
-                                  DropdownMenuItem(
+                                      child: Text(AppStrings.sortByValue),
+                                    ),
+                                    DropdownMenuItem(
                                       value: SortType.name,
-                                      child: Text(AppStrings.sortByName)),
-                                  DropdownMenuItem(
+                                      child: Text(AppStrings.sortByName),
+                                    ),
+                                    DropdownMenuItem(
                                       value: SortType.gain,
-                                      child: Text(AppStrings.sortByGain)),
-                                ],
-                                onChanged: (type) {
-                                  if (type != null) {
-                                    _portfolioController.setSortType(type);
-                                  }
-                                },
-                              )),
+                                      child: Text(AppStrings.sortByGain),
+                                    ),
+                                  ],
+                                  onChanged: (type) {
+                                    if (type != null) {
+                                      _portfolioController.setSortType(type);
+                                    }
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -229,13 +239,14 @@ class _DashboardViewState extends State<DashboardView>
                       const SliverPadding(padding: EdgeInsets.only(top: 12)),
 
                       // ── Holdings: Grid on tablet/desktop, List on mobile ──
-                      Obx(() => SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: LayoutBuilder(
+                      SliverToBoxAdapter(
+                        // padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: LayoutBuilder(
                           builder: (context, constraints) {
                             final width = MediaQuery.of(context).size.width;
+                            print(width);
                             // Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column list
-                            if (width >= 1024) {
+                            if (width >= 884) {
                               return _buildHoldingsGrid(crossAxisCount: 3);
                             } else if (width >= 600) {
                               return _buildHoldingsGrid(crossAxisCount: 2);
@@ -244,7 +255,7 @@ class _DashboardViewState extends State<DashboardView>
                             }
                           },
                         ),
-                      )),
+                      ),
 
                       const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
                     ],
@@ -267,35 +278,34 @@ class _DashboardViewState extends State<DashboardView>
     );
   }
 
-  /// Mobile: Vertical list of holding cards
-  SliverList _buildHoldingsList() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final holding = _portfolioController.holdings[index];
-          return HoldingListItem(holding: holding, index: index);
-        },
-        childCount: _portfolioController.holdings.length,
-      ),
+  // Change these to return standard Box widgets
+  Widget _buildHoldingsList() {
+    return ListView.builder(
+      shrinkWrap: true, // Required when inside a parent scrollable
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _portfolioController.holdings.length,
+      itemBuilder: (context, index) {
+        final holding = _portfolioController.holdings[index];
+        return HoldingListItem(holding: holding, index: index);
+      },
     );
   }
 
-  /// Tablet/Desktop: Grid of holding cards
-  SliverGrid _buildHoldingsGrid({required int crossAxisCount}) {
-    return SliverGrid(
+  Widget _buildHoldingsGrid({required int crossAxisCount}) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
         childAspectRatio: 2.8,
         crossAxisSpacing: 12,
         mainAxisSpacing: 4,
       ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final holding = _portfolioController.holdings[index];
-          return HoldingListItem(holding: holding, index: index);
-        },
-        childCount: _portfolioController.holdings.length,
-      ),
+      itemCount: _portfolioController.holdings.length,
+      itemBuilder: (context, index) {
+        final holding = _portfolioController.holdings[index];
+        return HoldingListItem(holding: holding, index: index);
+      },
     );
   }
 }

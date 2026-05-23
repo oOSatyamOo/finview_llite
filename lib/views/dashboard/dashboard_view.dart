@@ -117,153 +117,149 @@ class _DashboardViewState extends State<DashboardView>
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1400),
                 child: RefreshIndicator(
-                  onRefresh: _portfolioController.refreshData,
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      // ── Header greeting ──────────────────────────────────
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                        sliver: SliverToBoxAdapter(
-                          child: SlideTransition(
-                            position: _headerSlideAnimation,
-                            child: FadeTransition(
-                              opacity: _headerFadeAnimation,
-                              child: Obx(
-                                () => Text(
-                                  '${AppStrings.dashboardGreeting} ${_portfolioController.portfolio.value?.user ?? AppStrings.dashboardFallbackUser}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                              ),
+              onRefresh: _portfolioController.refreshData,
+              child: CustomScrollView(
+                slivers: [
+                  // ── Header greeting ──────────────────────────────────
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: SlideTransition(
+                        position: _headerSlideAnimation,
+                        child: FadeTransition(
+                          opacity: _headerFadeAnimation,
+                          child: Obx(
+                            () => Text(
+                              '${AppStrings.dashboardGreeting} ${_portfolioController.portfolio.value?.user ?? AppStrings.dashboardFallbackUser}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
                         ),
                       ),
-                      const SliverPadding(padding: EdgeInsets.only(top: 16)),
-
-                      // ── Responsive top section: Summary + Chart ───────────
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: SliverToBoxAdapter(
-                          child: ResponsiveHelper(
-                            // ── Mobile: Summary then Chart vertically ──────
-                            mobile: Column(
-                              children: [
-                                PortfolioSummaryCard(
+                    ),
+                  ),
+                  const SliverPadding(padding: EdgeInsets.only(top: 16)),
+            
+                  // ── Responsive top section: Summary + Chart ───────────
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(
+                      child: ResponsiveHelper(
+                        // ── Mobile: Summary then Chart vertically ──────
+                        mobile: Column(
+                          children: [
+                            PortfolioSummaryCard(
+                              summary:
+                                  _portfolioController.portfolio.value!,
+                            ),
+                            const SizedBox(height: 16),
+                            AllocationChart(
+                              holdings: _portfolioController.holdings,
+                            ),
+                          ],
+                        ),
+                        // ── Tablet/Desktop: side-by-side ─────────────
+                        desktop: IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Summary takes 55% of space
+                              Flexible(
+                                flex: 55,
+                                child: PortfolioSummaryCard(
                                   summary:
                                       _portfolioController.portfolio.value!,
                                 ),
-                                const SizedBox(height: 16),
-                                AllocationChart(
+                              ),
+                              const SizedBox(width: 16),
+                              // Chart takes 45% of space
+                              Flexible(
+                                flex: 45,
+                                child: AllocationChart(
                                   holdings: _portfolioController.holdings,
-                                ),
-                              ],
-                            ),
-                            // ── Tablet/Desktop: side-by-side ─────────────
-                            desktop: IntrinsicHeight(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // Summary takes 55% of space
-                                  Flexible(
-                                    flex: 55,
-                                    child: PortfolioSummaryCard(
-                                      summary:
-                                          _portfolioController.portfolio.value!,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  // Chart takes 45% of space
-                                  Flexible(
-                                    flex: 45,
-                                    child: AllocationChart(
-                                      holdings: _portfolioController.holdings,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SliverPadding(padding: EdgeInsets.only(top: 28)),
-
-                      // ── Holdings header row ────────────────────────────────
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: SliverToBoxAdapter(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                AppStrings.holdingsTitle,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w700),
-                              ),
-                              Obx(
-                                () => DropdownButton<SortType>(
-                                  value: _portfolioController.currentSort.value,
-                                  underline: const SizedBox(),
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  borderRadius: BorderRadius.circular(12),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: SortType.value,
-                                      child: Text(AppStrings.sortByValue),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: SortType.name,
-                                      child: Text(AppStrings.sortByName),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: SortType.gain,
-                                      child: Text(AppStrings.sortByGain),
-                                    ),
-                                  ],
-                                  onChanged: (type) {
-                                    if (type != null) {
-                                      _portfolioController.setSortType(type);
-                                    }
-                                  },
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-
-                      const SliverPadding(padding: EdgeInsets.only(top: 12)),
-
-                      // ── Holdings: Grid on tablet/desktop, List on mobile ──
-                      SliverToBoxAdapter(
-                        // padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final width = MediaQuery.of(context).size.width;
-                            print(width);
-                            // Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column list
-                            if (width >= 884) {
-                              return _buildHoldingsGrid(crossAxisCount: 3);
-                            } else if (width >= 600) {
-                              return _buildHoldingsGrid(crossAxisCount: 2);
-                            } else {
-                              return _buildHoldingsList();
-                            }
-                          },
-                        ),
-                      ),
-
-                      const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
-                    ],
+                    ),
                   ),
-                ),
+            
+                  const SliverPadding(padding: EdgeInsets.only(top: 28)),
+            
+                  // ── Holdings header row ────────────────────────────────
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverToBoxAdapter(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppStrings.holdingsTitle,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          Obx(
+                            () => DropdownButton<SortType>(
+                              value: _portfolioController.currentSort.value,
+                              underline: const SizedBox(),
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              borderRadius: BorderRadius.circular(12),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: SortType.value,
+                                  child: Text(AppStrings.sortByValue),
+                                ),
+                                DropdownMenuItem(
+                                  value: SortType.name,
+                                  child: Text(AppStrings.sortByName),
+                                ),
+                                DropdownMenuItem(
+                                  value: SortType.gain,
+                                  child: Text(AppStrings.sortByGain),
+                                ),
+                              ],
+                              onChanged: (type) {
+                                if (type != null) {
+                                  _portfolioController.setSortType(type);
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+            
+                  const SliverPadding(padding: EdgeInsets.only(top: 12)),
+            
+                  // ── Holdings: Grid on tablet/desktop, List on mobile ──
+                  SliverToBoxAdapter(
+                    // padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final width = MediaQuery.of(context).size.width;
+                        // Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column list
+                        if (width >= 884) {
+                          return _buildHoldingsGrid(crossAxisCount: 3);
+                        } else if (width >= 600) {
+                          return _buildHoldingsGrid(crossAxisCount: 2);
+                        } else {
+                          return _buildHoldingsList();
+                        }
+                      },
+                    ),
+                  ),
+            
+                  const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
+                ],
               ),
             ),
-
+              )),
             // ── Refresh overlay progress bar ─────────────────────────────
             if (_portfolioController.isLoading.value)
               const Positioned(

@@ -14,6 +14,7 @@ class AllocationChart extends StatefulWidget {
 
 class _AllocationChartState extends State<AllocationChart> {
   int touchedIndex = -1;
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,94 +35,118 @@ class _AllocationChartState extends State<AllocationChart> {
       (sum, item) => sum + item.totalValue,
     );
 
-    return Card(
-      elevation: 0,
-      color: theme.cardColor.withOpacity(0.5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                AppStrings.chartTitle,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+     return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        // A delayed scale-in entrance effect
+        final scaleValue = (value - 0.2).clamp(0.0, 1.0) / 0.8;
+        return Transform.scale(
+          scale: 0.9 + (0.1 * scaleValue),
+          child: Opacity(
+            opacity: value,
+            child: child,
+          ),
+        );
+      },
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
+          child: Card(
+            elevation: _isHovered ? 8 : Theme.of(context).cardTheme.elevation,
+                color: theme.cardColor.withOpacity(0.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: theme.dividerColor.withOpacity(0.1)),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (event, response) {
-                      setState(() {
-                        if (response?.touchedSection != null) {
-                          touchedIndex =
-                              response!.touchedSection!.touchedSectionIndex;
-                        } else {
-                          touchedIndex = -1;
-                        }
-                      });
-                    },
-                  ),
-                  sectionsSpace: 4,
-                  centerSpaceRadius: 50,
-                  sections: List.generate(widget.holdings.length, (i) {
-                    final isTouched = i == touchedIndex;
-                    return PieChartSectionData(
-                      color: colors[i % colors.length],
-                      value: widget.holdings[i].totalValue,
-                      radius: isTouched ? 60 : 50,
-                      // color: colors[i % colors.length],
-                      // value: value,
-                      // title: isTouched
-                      // ? '${holding.symbol}\n${percentage.toStringAsFixed(1)}%'
-                      // : holding.symbol,
-                      // radius: radius,
-                      titleStyle: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          AppStrings.chartTitle,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
-                      // cornerRadius: 8,
-                      title: widget.holdings[i].units
-                          .toString(), // Keep chart clean, show details in legend
-                      badgeWidget: isTouched
-                          ? _Badge(widget.holdings[i].symbol)
-                          : null,
-                      badgePositionPercentageOffset: 1.2,
-                    );
-                  }),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        height: 200,
+                        child: PieChart(
+                          PieChartData(
+                            pieTouchData: PieTouchData(
+                              touchCallback: (event, response) {
+                                setState(() {
+                                  if (response?.touchedSection != null) {
+                                    touchedIndex =
+                                        response!.touchedSection!.touchedSectionIndex;
+                                  } else {
+                                    touchedIndex = -1;
+                                  }
+                                });
+                              },
+                            ),
+                            sectionsSpace: 4,
+                            centerSpaceRadius: 50,
+                            sections: List.generate(widget.holdings.length, (i) {
+                              final isTouched = i == touchedIndex;
+                              return PieChartSectionData(
+                                color: colors[i % colors.length],
+                                value: widget.holdings[i].totalValue,
+                                radius: isTouched ? 60 : 50,
+                                // color: colors[i % colors.length],
+                                // value: value,
+                                // title: isTouched
+                                // ? '${holding.symbol}\n${percentage.toStringAsFixed(1)}%'
+                                // : holding.symbol,
+                                // radius: radius,
+                                titleStyle: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                // cornerRadius: 8,
+                                title: widget.holdings[i].units
+                                    .toString(), // Keep chart clean, show details in legend
+                                badgeWidget: isTouched
+                                    ? _Badge(widget.holdings[i].symbol)
+                                    : null,
+                                badgePositionPercentageOffset: 1.2,
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Custom Legend for premium look
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: List.generate(widget.holdings.length, (i) {
+                          return _LegendItem(
+                            color: colors[i % colors.length],
+                            text: widget.holdings[i].symbol,
+              
+                            percentage: (widget.holdings[i].totalValue / total) * 100,
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            // Custom Legend for premium look
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              runSpacing: 8,
-              children: List.generate(widget.holdings.length, (i) {
-                return _LegendItem(
-                  color: colors[i % colors.length],
-                  text: widget.holdings[i].symbol,
-
-                  percentage: (widget.holdings[i].totalValue / total) * 100,
-                );
-              }),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
   }
 }
 
